@@ -223,6 +223,7 @@ full, then put(), to enforce LIFO-like behavior for the newest frame.
 ■ callback=audio_callback
 ■ dtype='float32' (Crucial: Avoids manual int-to-float conversion math).
 ## 13
+
 ## ● 3. Lifecycle Management:
 ○ [ ] Implement stop_stream() to safely close the stream. This prevents the
 "hanging" process issue common in audio apps.
