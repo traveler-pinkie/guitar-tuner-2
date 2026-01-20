@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 import dsp_processor
+from main import detected_data
+
 
 root = Tk()
 window = Canvas(root, width = 400, height = 600)
@@ -25,7 +27,13 @@ window.itemconfig(target_value, text="0 cents")
 window.itemconfig(left_cents_value, text="-50")  
 window.itemconfig(right_cents_value, text="+50")  
 
+def read_latest_freq():
+    freq = detected_data["frequency"]
+    window.itemconfig(Hitz_label, text=f"{freq:.2f} Hz")
+    root.after(50, read_latest_freq)
 
 
-
+read_latest_freq()
 root.mainloop()
+
+
