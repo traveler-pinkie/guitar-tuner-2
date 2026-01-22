@@ -3,6 +3,7 @@ import sys
 from audio_engine import start_stream, stop_stream, AUDIO_QUEUE, callback_count
 import dsp_processor as  dsp
 from config import SAMPLE_RATE
+import threading
 
 detected_data = {
     "frequency": 0.0,
@@ -15,11 +16,13 @@ print("Starting audio stream...", flush=True)
 stream = start_stream()
 print("Audio stream started. Make noise near the microphone...", flush=True)
 
-try:
+def audio_processing_loop():
     count = 0
     while True:
         if not AUDIO_QUEUE.empty():
             data = AUDIO_QUEUE.get()
+            data = data.flatten()  # Convert (2048, 1) to (2048,)
+            print(f"Data shape: {data.shape}, Data size: {data.size}")  # Debug line
             rms = np.sqrt(np.mean(data**2))
             count += 1
             window_data = dsp.preprocess_buffer(data)
@@ -35,9 +38,12 @@ try:
             else:
                 detected_data["frequency"] = SAMPLE_RATE / min_index
                 print(f"[{count}] Detected frequency: {detected_data['frequency']:.2f} Hz")
-except KeyboardInterrupt:
-    print(f"\nStopping audio stream...", flush=True)
 
-finally:
-    stop_stream(stream)
-    print("Audio stream stopped.", flush=True)
+
+
+
+audio_thread = threading.Thread(target=audio_processing_loop, daemon=True)
+audio_thread.start()
+
+
+
